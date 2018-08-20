@@ -16,16 +16,22 @@ c4w1p1_sub<-transform(c4w1p1_sub,Sub_meterning_1=as.numeric(Sub_metering_1))
 c4w1p1_sub<-transform(c4w1p1_sub,Sub_meterning_2=as.numeric(Sub_metering_2))
 c4w1p1_sub<-transform(c4w1p1_sub,Sub_meterning_3=as.numeric(Sub_metering_3))
 
+library(dplyr)
+
+#add a column of date and time togegher
+c4w1p1_sub[,datetime:=paste(c4w1p1_sub$Date,c4w1p1_sub$Time,sep=" ")]  
+c4w1p1_sub<-transform(c4w1p1_sub,datetime=as.POSIXct(datetime, format="%d/%m/%Y %H:%M:%S"))
+
+
 str(c4w1p1_sub)
 par(mfrow=c(1,1))
 library(gridExtra)
 png("plot3.png",width=480,height=480)
 
-plot(c4w1p1_sub$Sub_metering_1,type="l",ylab="Energy sub metering",xlab=" ",xaxt="n")
-#tapply(c4w1p1_sub$Sub_metering_1, c4w1p1_sub$Day=="Thu"|c4w1p1_sub$Day=="Fri",plot,type="l",ylab="Energy sub metering",xlab=" ",xaxt="n")
-lines(c4w1p1_sub$Sub_metering_2,col="red")
-lines(c4w1p1_sub$Sub_metering_3,col="blue")
-axis(1,at=c(0,1441,2880),labels = c("Thu","Fri","Sat"))
+plot(c4w1p1_sub$Sub_metering_1~c4w1p1_sub$datetime,type="l",ylab="Energy sub metering",xlab=" ")
+lines(c4w1p1_sub$Sub_metering_2~c4w1p1_sub$datetime,col="red")
+lines(c4w1p1_sub$Sub_metering_3~c4w1p1_sub$datetime,col="blue")
+#axis(1,at=c(0,1441,2880),labels = c("Thu","Fri","Sat"))
 legend("topright",lty=1,xjust=1,cex=1,col=c("black","red","blue"),legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"))
 
 #dev.copy(png, width=480,height=480,file="plot3_ex.png")
